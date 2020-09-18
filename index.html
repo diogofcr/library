@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png">
+  <title>Library</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+     }
+    #bg-image {
+      background: #0f0c29;  /* fallback for old browsers */
+      background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      z-index: -1;
+      background-size: cover;
+    }
+
+    body {
+      font-family: "Roboto", Arial, Helvetica, sans-serif;
+      overflow-wrap: break-word;
+    }
+      
+    main {
+      text-align:center;
+    }
+
+    #library {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-evenly;
+      width: 80vw;
+      margin: auto;
+    }
+    
+    h1 {
+      text-align: center;
+      padding: 20px;
+      color: #00bcd4;
+      font-size: 2.2em;
+    }
+
+    .books {
+      width: 250px;
+      padding: 5px;
+      margin: 30px;
+      background-color:#5719ff9e;
+      border-radius: 10px;
+      position:relative;
+      border: 1px solid#3e3e3ea3;
+      text-align: center;
+    }
+
+    .img {
+      width: 200px;
+      height: 300px;
+      margin: 10px auto 5px auto;
+      border: 1px solid #3e3e3e;
+    }
+
+    .watched, .watch {
+      background: url("images/watched.png");
+      background-repeat: no-repeat;
+      object-fit: cover;
+      background-position: center center;
+      width: 15px;
+      height: 15px;
+      border: none;
+      position:absolute;
+      top: 7px;
+      right: 9px;
+    }
+
+    .watch {
+      background: url("images/watch.png");
+      background-size: cover;
+      width: 25px;
+      height: 14px;
+      right: 3px;
+    }
+
+    .remove {
+      background: url("images/remove.png");
+      background-size: cover;
+      background-repeat: no-repeat;
+      object-fit: cover;
+      background-position: center center;
+      width: 20px;
+      height: 20px;
+      border: none;
+      position:absolute;
+      top: 10px;
+      left: 6px;
+    }
+
+    .remove:hover, .watch:hover{
+      opacity: 0.3;
+    }
+
+    .watched:hover {
+      opacity: 0.6;
+    }
+
+    h2 {
+      color: #86BCA7;
+    }
+
+    p {
+      color: #e6e6e6;
+    }
+
+    input {
+      display:block;
+      padding: 5px;
+      margin: 5px;
+    }
+    
+    form {
+      width: 200px;
+      padding: 10px;
+      background-color:#5619ff;
+      border-radius: 10px;
+      border: 1px solid#3e3e3ea3;
+      text-align: left;
+      position:absolute;
+      top: -500%;
+      left: 55%;
+    }
+
+    label {
+      color: #e6e6e6;
+      padding: 8px;
+    }
+
+    #yes, #no {
+      display: inline-block;
+    }
+
+    #new, #done {
+      margin: 5px;
+      padding: 15px;
+      background-color:#5719ff9e;
+      border-radius: 25px;
+      border: 1px solid #e6e6e6;
+      color: #e6e6e6;
+      font-size: 1em;
+      outline: none;
+    }
+
+    #done {
+      position:absolute;
+      right: 5px;
+      bottom: 5px;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    #new:hover, #done:hover {
+      background-color:#8355ff9e;
+    }
+
+    .removeform {
+      background: url("images/remove.png");
+      background-size: cover;
+      background-repeat: no-repeat;
+      object-fit: cover;
+      background-position: center center;
+      width: 20px;
+      height: 20px;
+      border: none;
+      position:absolute;
+      top: 8px;
+      right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <div id="bg-image"></div>
+  <main>
+    <h1>Library</h1>
+    <div id="library"></div>
+    <div id="buttonandform" style="position: relative;">
+      <button id="new">Add new book</button>
+    </div>
+  </main>
+
+  <script>
+    let myLibrary = [];
+
+    function Book(title,author,pages,read,img) {
+      this.title = title;
+      this.author = author;
+      this.pages = pages;
+      this.read = read;
+      this.img = img;
+    }
+
+    const theHobbit = new Book("The Hobbit","J.R.R. Tolkien",310,false,"https://prodimage.images-bn.com/pimages/9780345445605_p0_v1_s550x406.jpg");
+    myLibrary.push(theHobbit);
+    const stickrudder = new Book("Stick and Rudder","Wolfgang Langewiesche",389,false,"https://images-na.ssl-images-amazon.com/images/I/51+z7RNeZIL.jpg");
+    myLibrary.push(stickrudder);
+    const weatherflying = new Book("Weather Flying","Robert N. Buck",417,false,"https://images-na.ssl-images-amazon.com/images/I/61IbNNaCsdL._AC_UL600_SR417,600_.jpg");
+    myLibrary.push(weatherflying);
+    const nevergetlost = new Book("Never get lost","Wilhelm Thaller",260,true,"https://www.pilotshop.nl/contents/media/l_never-get-lost-500.jpg");
+    myLibrary.push(nevergetlost);
+
+    document.getElementById("new").addEventListener("click", addForm);
+    function addForm () {
+        //-- Create elements
+        let form = document.createElement("form");
+        form.id = "newbookform";
+        form.setAttribute("action", "javascript:addBookToLibrary();");
+        //Title
+        let titlediv = document.createElement("div");
+        let titlelabel = document.createElement("label");
+        let titleinput = document.createElement("input");
+        titlediv.appendChild(titlelabel);
+        titlediv.appendChild(titleinput);
+        titlelabel.textContent = "What is the book title?";
+        titlelabel.setAttribute('for', 'title');
+        titleinput.id = "title";
+        titleinput.setAttribute('type', 'text');
+        titleinput.setAttribute('name', 'title');
+        titleinput.required = true;
+        //Author
+        let authordiv = document.createElement("div");
+        let authorlabel = document.createElement("label");
+        let authorinput = document.createElement("input");
+        authordiv.appendChild(authorlabel);
+        authordiv.appendChild(authorinput);
+        authorlabel.textContent = "Who is the author?";
+        authorlabel.setAttribute('for', 'author');
+        authorinput.id = "author";
+        authorinput.setAttribute('type', 'text');
+        authorinput.setAttribute('name', 'author');
+        authorinput.required = true;
+        //URL
+        let urldiv = document.createElement("div");
+        let urllabel = document.createElement("label");
+        let urlinput = document.createElement("input");
+        urldiv.appendChild(urllabel);
+        urldiv.appendChild(urlinput);
+        urllabel.textContent = "Insert URL of book image (not required)";
+        urllabel.setAttribute('for', 'url');
+        urlinput.id = "url";
+        urlinput.setAttribute('type', 'url');
+        urlinput.setAttribute('name', 'url');
+        urlinput.setAttribute('placeholder', 'https://example.com');
+        urlinput.required = false;
+        //Page number
+        let pagediv = document.createElement("div");
+        let pageslabel = document.createElement("label");
+        let pagesinput = document.createElement("input");
+        pagediv.appendChild(pageslabel);
+        pagediv.appendChild(pagesinput);
+        pageslabel.textContent = "How many pages does it have?";
+        pageslabel.setAttribute('for', 'pages');
+        pagesinput.id = "pages";
+        pagesinput.setAttribute('type', 'number');
+        pagesinput.setAttribute('name', 'pages');
+        pagesinput.setAttribute('min', '0');
+        pagesinput.required = true;
+        //Yes or No
+        let readdiv = document.createElement("div");
+        let readlabel = document.createElement("label");
+        let yesdiv = document.createElement("div");
+        let yesinput = document.createElement("input");
+        let yeslabel = document.createElement("label");
+        let nodiv = document.createElement("div");
+        let noinput = document.createElement("input");
+        let nolabel = document.createElement("label");
+        yesdiv.appendChild(yesinput);
+        yesdiv.appendChild(yeslabel);
+        nodiv.appendChild(noinput);
+        nodiv.appendChild(nolabel);
+        readdiv.appendChild(readlabel);
+        readdiv.appendChild(yesdiv);
+        readdiv.appendChild(nodiv);
+        readlabel.textContent = "Have you read it?";
+        yeslabel.textContent = "Yes";
+        yeslabel.setAttribute('for', 'yes');
+        yesinput.setAttribute('type', 'radio');
+        yesinput.id = "yes";
+        yesinput.setAttribute('name', 'read');
+        yesinput.setAttribute('value', 'true');
+        yesinput.required = true;
+        nolabel.textContent = "No";
+        nolabel.setAttribute('for', 'no');
+        noinput.setAttribute('type', 'radio');
+        noinput.id = "no";
+        noinput.setAttribute('name', 'read');
+        noinput.setAttribute('value', 'false');
+        noinput.required = true;
+        //Done button
+        let donebutton = document.createElement("button");
+        donebutton.id = "done";
+        donebutton.textContent = "Done";
+        //Remove button
+        let removebutton = document.createElement("button");
+        removebutton.setAttribute('type', 'button');
+        removebutton.addEventListener("click", () => document.getElementById("newbookform").remove()); //Remove form if pressed
+        removebutton.classList.add('removeform');
+        //Clicking the div focus on the text input
+        titlediv.addEventListener("click", () => {titleinput.focus();});
+        authordiv.addEventListener("click", () => {authorinput.focus();});
+        urldiv.addEventListener("click", () => {urlinput.focus();});
+        pagediv.addEventListener("click", () => {pagesinput.focus();});
+        //Append divs to form
+        form.appendChild(titlediv);
+        form.appendChild(authordiv);
+        form.appendChild(urldiv);
+        form.appendChild(pagediv);
+        form.appendChild(readdiv);
+        form.appendChild(donebutton);
+        form.appendChild(removebutton);
+        //Append form to "buttonandform" div
+        document.getElementById("buttonandform").appendChild(form);
+
+        
+              //------------------------- Make the Form element draggable:
+              dragElement(document.getElementById("newbookform"));
+
+          function dragElement(elmnt) {
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            if (document.getElementById(elmnt.id + "header")) {
+              // if present, the header is where you move the DIV from:
+              document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+            } else {
+              // otherwise, move the DIV from anywhere inside the DIV:
+              elmnt.onmousedown = dragMouseDown;
+            }
+
+            function dragMouseDown(e) {
+              e = e || window.event;
+              e.preventDefault();
+              // get the mouse cursor position at startup:
+              pos3 = e.clientX;
+              pos4 = e.clientY;
+              document.onmouseup = closeDragElement;
+              // call a function whenever the cursor moves:
+              document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+              e = e || window.event;
+              e.preventDefault();
+              // calculate the new cursor position:
+              pos1 = pos3 - e.clientX;
+              pos2 = pos4 - e.clientY;
+              pos3 = e.clientX;
+              pos4 = e.clientY;
+              // set the element's new position:
+              elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+              elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+              // stop moving when mouse button is released:
+              document.onmouseup = null;
+              document.onmousemove = null;
+            }
+          }
+    }
+
+    function addBookToLibrary() {
+      let title = document.getElementById("newbookform").elements[0].value;
+      let img = document.getElementById("newbookform").elements[2].value;
+      let author = document.getElementById("newbookform").elements[1].value;
+      let pages = Number(document.getElementById("newbookform").elements[3].value);
+      let read;
+      if (!img) img = "images/default_book_cover_2015.jpg";
+      if (document.getElementById("newbookform").elements[4].checked) {
+        read = true;
+      } else if (document.getElementById("newbookform").elements[5].checked) {
+        read = false;
+      }
+
+      const book = new Book(title,author,pages,read,img); //Creates a new object inherited from Book
+      myLibrary.push(book); //Adds new book to library
+      document.getElementById("newbookform").remove();
+      updateLibrary();
+    }
+    
+    updateLibrary();
+    function updateLibrary() {
+      const library = document.getElementById("library");
+      library.textContent = ''; //Remove all elements from div id=library
+      myLibrary.forEach(element => {
+        //-- Create elements
+        let div = document.createElement("div");
+        let img = document.createElement("img");
+        let title = document.createElement("h2");
+        let author = document.createElement("p");
+        let pages = document.createElement("p");
+        let read = document.createElement("p");
+        let remove = document.createElement("button");
+        let status = document.createElement("button");
+        //-- Insert text/img for each element
+        img.src = element.img;
+        img.setAttribute("onerror", "this.onerror=null;this.src='images/default_book_cover_2015.jpg'"); //In case image can't load it will be the default
+        title.textContent = element.title;
+        author.textContent = element.author;
+        pages.textContent = element.pages + " pages";
+        read.textContent = element.read ? "Read" : "Not read yet";
+        //Data set for buttons and Event listeners
+        remove.dataset.ID = myLibrary.indexOf(element);
+        status.dataset.ID = myLibrary.indexOf(element);
+        remove.addEventListener("click", removeBook);
+        status.addEventListener("click", changeStatus);
+        //--Append elements to div
+        div.appendChild(img);
+        div.appendChild(title);
+        div.appendChild(author);
+        div.appendChild(pages);
+        div.appendChild(read);
+        div.appendChild(remove);
+        div.appendChild(status);
+        //--Styles
+        remove.classList.add('remove');
+        element.read ? status.classList.add('watched') : status.classList.add('watch'); // If read it adds class "watched" if not it adds class "watch"
+        status.classList.add('status');
+        img.classList.add('img');
+        div.classList.add('books');
+        //-Append div to library
+        library.appendChild(div);
+      });
+    }
+
+
+    function removeBook(element) { //Remove book from library
+      myLibrary.splice(element.target.dataset.ID, 1); //Gets the element ID and removes it from myLibrary
+      updateLibrary();
+    };
+
+    function changeStatus(element) { //Change from read or not read
+      if (myLibrary[element.target.dataset.ID].read) { //If the book is "read" pressing the button change it to "not read"
+        myLibrary[element.target.dataset.ID].read = false;
+      } else if (!(myLibrary[element.target.dataset.ID].read)) { //If the book is "not read" pressing the button change it to "read"
+        myLibrary[element.target.dataset.ID].read = true;
+      };
+      updateLibrary();
+    };
+  </script>
+</body>
+</html>
