@@ -330,6 +330,8 @@
           configurable: false,
           writable: false
         });
+        // Make new book button clickable
+        document.getElementById("new").addEventListener("click", addForm);
         //
         updateLibrary(); //Refresh the library display
       }); 
@@ -367,6 +369,7 @@
           myLibrary.push(child.val());
         });
         updateLibrary();
+        document.getElementById("new").addEventListener("click", addForm);
       });
     }
 
@@ -386,7 +389,6 @@
       this.img = img;
     }
 
-    document.getElementById("new").addEventListener("click", addForm);
     function addForm () { // When you press the new book button it pops up a form
         //-- Create elements
         let form = document.createElement("form");
