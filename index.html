@@ -280,7 +280,7 @@
     let myLibrary = [];
 
     // -------------------------- FIREBASE -----------------------------------------
-    let userID;
+    //let userID;
     // Initialize the FirebaseUI Widget using Firebase.
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     ui.start('#firebaseui-auth-container', {
@@ -324,6 +324,12 @@
         loginbutton.addEventListener("click", () => location.reload());
         loginbutton.classList.add('logoutbutton');
         document.body.appendChild(loginbutton);
+        // Make global constant userID null
+        Object.defineProperty(window, 'userID', {
+          value: null,
+          configurable: false,
+          writable: false
+        });
         //
         updateLibrary(); //Refresh the library display
       }); 
@@ -334,7 +340,11 @@
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        userID = firebase.auth().currentUser.uid;
+        Object.defineProperty(window, 'userID', { //Make global constant userID
+          value: firebase.auth().currentUser.uid,
+          configurable: false,
+          writable: false
+        });
         initialize();
         document.getElementById('login').style.display = 'none';
         document.getElementById('main').classList.remove('blur');
@@ -348,8 +358,6 @@
         });
         logoutbutton.classList.add('logoutbutton');
         document.body.appendChild(logoutbutton);
-      } else {
-        // User not logged in or has just logged out.
       }
     });
     
