@@ -37,11 +37,15 @@
       margin: auto;
     }
     
-    h1 {
+    main h1, #login h2 {
       text-align: center;
       padding: 20px;
       color: #00bcd4;
       font-size: 2.2em;
+    }
+
+    #login h2 {
+      padding: 10px;
     }
 
     .books {
@@ -93,11 +97,11 @@
       height: 20px;
       border: none;
       position:absolute;
-      top: 10px;
+      top: 7px;
       left: 6px;
     }
 
-    .remove:hover, .watch:hover{
+    .remove:hover, .watch:hover, .removeform:hover, .removelogin:hover {
       opacity: 0.3;
     }
 
@@ -105,21 +109,21 @@
       opacity: 0.6;
     }
 
-    h2 {
+    main h2 {
       color: #86BCA7;
     }
 
-    p {
+    main p, #login p {
       color: #e6e6e6;
     }
 
-    input {
+    input{
       display:block;
       padding: 5px;
       margin: 5px;
     }
     
-    form {
+    #newbookform {
       width: 200px;
       padding: 10px;
       background-color:#5619ff;
@@ -131,7 +135,7 @@
       left: 55%;
     }
 
-    label {
+    #newbookform label {
       color: #e6e6e6;
       padding: 8px;
     }
@@ -159,11 +163,11 @@
       border-radius: 5px;
     }
 
-    #new:hover, #done:hover {
+    #new:hover, #done:hover, .logoutbutton:hover {
       background-color:#8355ff9e;
     }
 
-    .removeform {
+    .removeform, .removelogin {
       background: url("images/remove.png");
       background-size: cover;
       background-repeat: no-repeat;
@@ -176,12 +180,95 @@
       top: 8px;
       right: 4px;
     }
+
+    .removelogin {
+      top: 8px;
+      right: 4px;
+    }
+
+   .logoutbutton {
+      background-size: cover;
+      background-repeat: no-repeat;
+      object-fit: cover;
+      background-position: center center;
+      border: none;
+      position:absolute;
+      padding: 5px;
+      top: 7px;
+      right: 6px;
+      background-color:#5719ff9e;
+      border: 1px solid #e6e6e6;
+      color: #e6e6e6;
+    }
+
+    .blur {
+      -webkit-filter: blur(8px);
+      -moz-filter: blur(8px);
+      -o-filter: blur(8px);
+      -ms-filter: blur(8px);
+      filter: blur(8px);
+    }
+    #login {
+      text-align: center;
+      position: absolute;
+      z-index: 9;
+      background-color:#5619ff;
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid#3e3e3ea3;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+    
+    #login p {
+      padding: 5px;
+    }
   </style>
 </head>
+
+<!-- ----------------------------FIREBASE-------------------------------------------------- -->
+<body>
+  <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyB18DbM0hGs3Kwe_BiwEG9es3dmxzJ8d00",
+      authDomain: "libraryprojectodin.firebaseapp.com",
+      databaseURL: "https://libraryprojectodin.firebaseio.com",
+      projectId: "libraryprojectodin",
+      storageBucket: "libraryprojectodin.appspot.com",
+      messagingSenderId: "846499829537",
+      appId: "1:846499829537:web:6fad646ac37c861a051060"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</body>
+<head>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+</head>
+<!-- ----------------------------FIREBASE ENDED-------------------------------------------------- -->
+
+
 <body>
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+
   <div id="bg-image"></div>
-  <main>
+  <div id="login">
+    <h2>Login</h2>
+    <p>Please login or you will lose your data.</p>
+    <div id="firebaseui-auth-container"></div>
+    <div id="loader">Loading...</div>
+  </div>
+
+  <main id="main">
     <h1>Library</h1>
     <div id="library"></div>
     <div id="buttonandform" style="position: relative;">
@@ -192,6 +279,97 @@
   <script>
     let myLibrary = [];
 
+    // -------------------------- FIREBASE -----------------------------------------
+    let userID;
+    // Initialize the FirebaseUI Widget using Firebase.
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start('#firebaseui-auth-container', {
+      callbacks: {
+        uiShown: function() {
+          // The widget is rendered.
+          // Hide the loader.
+          document.getElementById('loader').style.display = 'none';
+        }
+      },
+      signInFlow: 'popup',
+      signInOptions: [
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID
+      ],
+      // Other config options...
+    });
+
+    loginForm();    
+    function loginForm () {
+      document.getElementById('main').classList.add('blur');
+      //Remove button for login ui
+      let removebuttonloginui = document.createElement("button");
+      removebuttonloginui.setAttribute('type', 'button');
+      removebuttonloginui.addEventListener("click", () => { //Remove form and blur if pressed
+        document.getElementById("login").remove();
+        document.getElementById('main').classList.remove('blur');
+        //Add example books
+        const theHobbit = new Book("The Hobbit","J.R.R. Tolkien",310,false,"https://prodimage.images-bn.com/pimages/9780345445605_p0_v1_s550x406.jpg");
+        myLibrary.push(theHobbit);
+        const stickrudder = new Book("Stick and Rudder","Wolfgang Langewiesche",389,false,"https://images-na.ssl-images-amazon.com/images/I/51+z7RNeZIL.jpg");
+        myLibrary.push(stickrudder);
+        const weatherflying = new Book("Weather Flying","Robert N. Buck",417,false,"https://images-na.ssl-images-amazon.com/images/I/61IbNNaCsdL._AC_UL600_SR417,600_.jpg");
+        myLibrary.push(weatherflying);
+        const nevergetlost = new Book("Never get lost","Wilhelm Thaller",260,true,"https://www.pilotshop.nl/contents/media/l_never-get-lost-500.jpg");
+        myLibrary.push(nevergetlost);
+        //AddLogin button (top right)
+        let loginbutton = document.createElement("button");
+        loginbutton.id = "logoutbutton";
+        loginbutton.textContent = "Login";
+        loginbutton.addEventListener("click", () => location.reload());
+        loginbutton.classList.add('logoutbutton');
+        document.body.appendChild(loginbutton);
+        //
+        updateLibrary(); //Refresh the library display
+      }); 
+      removebuttonloginui.classList.add('removelogin');
+      document.getElementById("login").appendChild(removebuttonloginui);
+    }
+
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        userID = firebase.auth().currentUser.uid;
+        initialize();
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('main').classList.remove('blur');
+        //Logout button (top right)
+        let logoutbutton = document.createElement("button");
+        logoutbutton.id = "logoutbutton";
+        logoutbutton.textContent = "Logout";
+        logoutbutton.addEventListener("click", () => {
+          firebase.auth().signOut();
+          location.reload();
+        });
+        logoutbutton.classList.add('logoutbutton');
+        document.body.appendChild(logoutbutton);
+      } else {
+        // User not logged in or has just logged out.
+      }
+    });
+    
+    function initialize() { //Reads myLibrary array from firebase
+      firebase.database().ref('users/' + userID).once("value", function(snapshot) {
+        snapshot.forEach(function(child) {
+          myLibrary.push(child.val());
+        });
+        updateLibrary();
+      });
+    }
+
+    function writeUserData() { //Writes data to firebase
+      if (userID) {
+        firebase.database().ref('users/' + userID).set(myLibrary);
+      }
+    }
+
+    // -------------------------- FIREBASE END ---------------------------------
+
     function Book(title,author,pages,read,img) {
       this.title = title;
       this.author = author;
@@ -200,17 +378,8 @@
       this.img = img;
     }
 
-    const theHobbit = new Book("The Hobbit","J.R.R. Tolkien",310,false,"https://prodimage.images-bn.com/pimages/9780345445605_p0_v1_s550x406.jpg");
-    myLibrary.push(theHobbit);
-    const stickrudder = new Book("Stick and Rudder","Wolfgang Langewiesche",389,false,"https://images-na.ssl-images-amazon.com/images/I/51+z7RNeZIL.jpg");
-    myLibrary.push(stickrudder);
-    const weatherflying = new Book("Weather Flying","Robert N. Buck",417,false,"https://images-na.ssl-images-amazon.com/images/I/61IbNNaCsdL._AC_UL600_SR417,600_.jpg");
-    myLibrary.push(weatherflying);
-    const nevergetlost = new Book("Never get lost","Wilhelm Thaller",260,true,"https://www.pilotshop.nl/contents/media/l_never-get-lost-500.jpg");
-    myLibrary.push(nevergetlost);
-
     document.getElementById("new").addEventListener("click", addForm);
-    function addForm () {
+    function addForm () { // When you press the new book button it pops up a form
         //-- Create elements
         let form = document.createElement("form");
         form.id = "newbookform";
@@ -274,6 +443,8 @@
         let nodiv = document.createElement("div");
         let noinput = document.createElement("input");
         let nolabel = document.createElement("label");
+        //yesdiv.classList.add('radio');
+        //nodiv.classList.add('radio');
         yesdiv.appendChild(yesinput);
         yesdiv.appendChild(yeslabel);
         nodiv.appendChild(noinput);
@@ -287,14 +458,12 @@
         yesinput.setAttribute('type', 'radio');
         yesinput.id = "yes";
         yesinput.setAttribute('name', 'read');
-        yesinput.setAttribute('value', 'true');
         yesinput.required = true;
         nolabel.textContent = "No";
         nolabel.setAttribute('for', 'no');
         noinput.setAttribute('type', 'radio');
         noinput.id = "no";
         noinput.setAttribute('name', 'read');
-        noinput.setAttribute('value', 'false');
         noinput.required = true;
         //Done button
         let donebutton = document.createElement("button");
@@ -318,6 +487,10 @@
         form.appendChild(readdiv);
         form.appendChild(donebutton);
         form.appendChild(removebutton);
+        //Make div not spawn outside when 0 books
+        if (myLibrary.length === 0) {
+          form.style.top = "-90%";
+        }
         //Append form to "buttonandform" div
         document.getElementById("buttonandform").appendChild(form);
 
@@ -367,7 +540,7 @@
           }
     }
 
-    function addBookToLibrary() {
+    function addBookToLibrary() { //Adds a book object to myLibrary array
       let title = document.getElementById("newbookform").elements[0].value;
       let img = document.getElementById("newbookform").elements[2].value;
       let author = document.getElementById("newbookform").elements[1].value;
@@ -383,11 +556,11 @@
       const book = new Book(title,author,pages,read,img); //Creates a new object inherited from Book
       myLibrary.push(book); //Adds new book to library
       document.getElementById("newbookform").remove();
-      updateLibrary();
+      updateLibrary(); //Refresh the library display
+      writeUserData(); //Write data to firebase, if logged in
     }
     
-    updateLibrary();
-    function updateLibrary() {
+    function updateLibrary() { //Refresh the library display
       const library = document.getElementById("library");
       library.textContent = ''; //Remove all elements from div id=library
       myLibrary.forEach(element => {
@@ -434,7 +607,8 @@
 
     function removeBook(element) { //Remove book from library
       myLibrary.splice(element.target.dataset.ID, 1); //Gets the element ID and removes it from myLibrary
-      updateLibrary();
+      updateLibrary(); //Refresh the library display
+      writeUserData(); //Write data to firebase, if logged in
     };
 
     function changeStatus(element) { //Change from read or not read
@@ -443,7 +617,8 @@
       } else if (!(myLibrary[element.target.dataset.ID].read)) { //If the book is "not read" pressing the button change it to "read"
         myLibrary[element.target.dataset.ID].read = true;
       };
-      updateLibrary();
+      updateLibrary(); //Refresh the library display
+      writeUserData(); //Write data to firebase, if logged in
     };
   </script>
 </body>
